@@ -1,0 +1,11 @@
+.navbar {
+  border-radius: 0 !important;
+}
+.container {
+  text-align: center;
+}
+.comicHolder {
+  width: 550px;
+  background-color: grey;
+  display: inline-block;
+}
