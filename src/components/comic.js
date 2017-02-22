@@ -2,9 +2,13 @@ import React, { Component } from 'react'
 
 class Comic extends Component {
   render() {
-    return(
-      <div className="comicHolder">comickkk</div>
-    )
+    if(this.props.comic !== null) {
+      return(
+        <div className="comicHolder">{this.props.comic.name}</div>
+      )
+    } else {
+      return(<div></div>);
+    }
   }
 }
 

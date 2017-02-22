@@ -36,14 +36,10 @@ class Login extends Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
-  return {};
-}
-
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators({signInWithGoogle, signOut}, dispatch)
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(null, mapDispatchToProps)(Login);

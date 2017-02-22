@@ -6,5 +6,11 @@ export default {
     isLogged: false,
     currentUserUID: null,
     initialized: false
+  },
+  comics: {
+    latest: null,
+    current: null,
+    next: null,
+    prev: null
   }
 };

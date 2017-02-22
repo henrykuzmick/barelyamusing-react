@@ -5,19 +5,25 @@ const NewComicForm = (props) => {
   const { handleSubmit, pristine, reset, submitting } = props;
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="firstName">First Name</label>
-        <Field name="firstName" component="input" type="text"/>
+      <div className="form-group row">
+        <label className="col-xs-2 col-form-label" htmlFor="name">name</label>
+        <div className="col-xs-10">
+          <Field className="form-control" name="name" component="input" type="text"/>
+        </div>
       </div>
-      <div>
-        <label htmlFor="lastName">Last Name</label>
-        <Field name="lastName" component="input" type="text"/>
+      <div className="form-group row">
+        <label className="col-xs-2 col-form-label" htmlFor="url">url</label>
+        <div className="col-xs-10">
+          <Field className="form-control" name="url" component="input" type="text"/>
+        </div>
       </div>
-      <div>
-        <label htmlFor="email">Email</label>
-        <Field name="email" component="input" type="email"/>
+      <div className="form-group row">
+        <label className="col-xs-2 col-form-label" htmlFor="comment">comment</label>
+        <div className="col-xs-10">
+          <Field className="form-control" name="comment" component="input" type="text"/>
+        </div>
       </div>
-      <button type="submit">Submit</button>
+      <button className="btn btn-primary" type="submit">Submit</button>
     </form>
   );
 }

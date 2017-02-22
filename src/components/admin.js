@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import checkAuth from './requireAuth';
-import NewComicForm from './newComicForm'
+import NewComicForm from './newComicForm';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { submitComic } from '../actions'
 
 class Admin extends Component {
+  constructor(props, context) {
+    super(props, context);
+  }
   handleSubmit = (values) => {
-    console.log(values);
+    this.props.actions.submitComic(values);
   }
   render() {
     return(
@@ -13,4 +19,10 @@ class Admin extends Component {
   }
 }
 
-export default checkAuth(Admin)
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({submitComic}, dispatch)
+  };
+}
+
+export default connect(null, mapDispatchToProps)(Admin);

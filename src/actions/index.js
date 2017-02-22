@@ -92,3 +92,38 @@ function redirect(replace, pathname, nextPathName, error = false) {
     toastr.error(error);
   }
 }
+
+export function submitComic(comic) {
+  return (dispatch, getState) => {
+    firebaseApi.databasePush("comics/", comic)
+    .then(
+      () => {
+        dispatch(addComicSuccess());
+      }
+    )
+  }
+}
+
+export function addComicSuccess() {
+  return {
+    type: types.ADD_COMIC_SUCCESS
+  };
+}
+
+export function getLatestComic() {
+  return (dispatch, getState) => {
+    firebaseApi.getLatestChildByPath("comics/")
+    .then(
+      (data) => {
+        dispatch(getLatestComicSuccess(data.val()));
+      }
+    )
+  }
+}
+
+export function getLatestComicSuccess(comic) {
+  return {
+    type: types.GET_LATEST_COMICS_SUCCESS,
+    payload: comic
+  };
+}

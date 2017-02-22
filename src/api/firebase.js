@@ -58,6 +58,15 @@ class FirebaseApi {
       .once('value');
   }
 
+  static getLatestChildByPath(path) {
+    return firebase
+      .database()
+      .ref(path)
+      .limitToLast(1)
+      .once('child_added');
+  }
+
+
   static GetChildAddedByKeyOnce(path, key) {
     return firebase
       .database()
