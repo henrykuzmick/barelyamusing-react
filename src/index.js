@@ -1,19 +1,30 @@
+// modules
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, browserHistory} from 'react-router';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
-import {authInitialized} from './actions/';
-import routes from './routes'
-import thunk from 'redux-thunk';
 
-import App from './components/app';
-import Login from './components/login'
-import reducers from './reducers';
+// api
 import FirebaseApi from './api/firebase';
 
+// actions
+import {authInitialized} from './actions/';
+
+// components
+import App from './components/app';
+import Login from './components/login'
+
+// store
 import initialState from './reducers/initialState';
 import configureStore from './store/configureStore';
+
+// routes
+import routes from './routes'
+
+
+
+
 
 // styles
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'

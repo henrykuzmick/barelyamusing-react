@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import checkAuth from './requireAuth';
+import NewComicForm from './newComicForm'
 
 class Admin extends Component {
+  handleSubmit = (values) => {
+    console.log(values);
+  }
   render() {
     return(
-      <div>Admin Page</div>
+      <NewComicForm onSubmit={this.handleSubmit} />
     )
   }
 }

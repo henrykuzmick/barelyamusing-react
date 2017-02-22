@@ -1,7 +1,20 @@
 import React, { Component } from 'react';
+import {Link, IndexLink} from 'react-router';
 import { connect } from 'react-redux';
 
 class Header extends Component {
+
+  renderAdminLinks() {
+
+    if(this.props.auth.isLogged) {
+      return(
+        <ul className="nav navbar-nav navbar-right">
+          <li><Link to="/admin" activeClassName="active">Admin</Link></li>
+        </ul>
+      )
+    }
+  }
+
   render() {
     console.log(this.props);
     return (
@@ -14,7 +27,7 @@ class Header extends Component {
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <a className="navbar-brand" href="#">Home</a>
+            <Link to="/" className="navbar-brand" activeClassName="active">Home</Link>
           </div>
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
@@ -23,6 +36,7 @@ class Header extends Component {
               <li><a href="#">Patreon</a></li>
               <li><a href="#">About</a></li>
             </ul>
+            { this.renderAdminLinks() }
           </div>
         </div>
       </nav>
