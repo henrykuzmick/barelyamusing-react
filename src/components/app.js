@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import Header from './header';
-import ComicPage from './comicPage'
+import ComicPage from './comicPage';
+import { getAllComics } from '../actions';
+import { connect } from 'react-redux';
 
-export default class App extends Component {
+class App extends Component {
   constructor(props, context) {
     super(props, context);
+  }
+  componentWillMount() {
+    this.props.getAllComics();
   }
   render() {
     return (
@@ -17,3 +22,5 @@ export default class App extends Component {
     );
   }
 }
+
+export default connect(null, { getAllComics })(App);

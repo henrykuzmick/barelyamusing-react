@@ -1,7 +1,7 @@
 import toastr from 'toastr';
 import firebaseApi from '../api/firebase';
 import * as types from './actionTypes';
-import {push} from 'react-router-redux';
+import { push } from 'react-router-redux';
 
 export function signInWithGoogle() {
   return (dispatch) => {
@@ -43,16 +43,6 @@ export function authInitialized(user) {
 export function authLoggedIn(userUID) {
   return (dispatch) => {
     dispatch(authLoggedInSuccess(userUID));
-    // firebaseApi.GetChildAddedByKeyOnce('/users', userUID)
-    //   .then(
-    //     user => {
-    //       dispatch(userLoadedSuccess(user.val()));
-    //       dispatch(push('/'));
-    //     })
-    //   .catch(
-    //     error => {
-    //       throw(error);
-    //     });
   };
 }
 
@@ -93,9 +83,12 @@ function redirect(replace, pathname, nextPathName, error = false) {
   }
 }
 
-export function submitComic(comic) {
+export function submitComic(key, comic) {
+  let dataToSave = {};
+  dataToSave[`comics/${key}`] = comic;
+  dataToSave[`comic_numbers/${key}`] = true;
   return (dispatch, getState) => {
-    firebaseApi.databasePush("comics/", comic)
+    firebaseApi.databaseUpdate(dataToSave)
     .then(
       () => {
         dispatch(addComicSuccess());
@@ -110,12 +103,28 @@ export function addComicSuccess() {
   };
 }
 
+export function getAllComics() {
+  return dispatch => {
+    firebaseApi.GetValueByKeyOnce("/", "comic_numbers")
+    .then(snapshot => {
+      dispatch(
+        {
+          type: types.GET_ALL_COMICS,
+          payload: snapshot.val()
+        }
+      );
+    });
+  }
+}
+
 export function getLatestComic() {
   return (dispatch, getState) => {
     firebaseApi.getLatestChildByPath("comics/")
     .then(
       (data) => {
-        dispatch(getLatestComicSuccess(data.val()));
+        let comic = data.val();
+        comic.key = data.key;
+        dispatch(getLatestComicSuccess(comic));
       }
     )
   }
@@ -126,4 +135,58 @@ export function getLatestComicSuccess(comic) {
     type: types.GET_LATEST_COMICS_SUCCESS,
     payload: comic
   };
+}
+
+export function getCurrentComic(curr, prev, next) {
+  return dispatch => {
+    if(curr) {
+      firebaseApi.GetValueByKeyOnce("comics/", curr)
+      .then( data => {
+        let curr_comic = data.val();
+        curr_comic.key = data.key;
+        dispatch({
+          type: types.GET_CURRENT_COMIC,
+          payload: curr_comic
+        });
+      });
+    } else {
+      dispatch({
+        type: types.GET_CURRENT_COMIC,
+        payload: null
+      });
+    }
+    if(prev) {
+      firebaseApi.GetValueByKeyOnce("comics/", prev)
+      .then( data => {
+        let prev_comic = data.val();
+        prev_comic.key = data.key;
+        dispatch({
+          type: types.GET_PREV_COMIC,
+          payload: prev_comic
+        });
+      });
+    } else {
+      dispatch({
+        type: types.GET_PREV_COMIC,
+        payload: null
+      });
+    }
+    if(next) {
+      firebaseApi.GetValueByKeyOnce("comics/", next)
+      .then( data => {
+        let next_comic = data.val();
+        next_comic.key = data.key;
+        dispatch({
+          type: types.GET_NEXT_COMIC,
+          payload: next_comic
+        });
+      });
+    }
+    else {
+      dispatch({
+        type: types.GET_NEXT_COMIC,
+        payload: null
+      });
+    }
+  }
 }

@@ -11,6 +11,7 @@ export default {
     latest: null,
     current: null,
     next: null,
-    prev: null
+    prev: null,
+    list: {}
   }
 };

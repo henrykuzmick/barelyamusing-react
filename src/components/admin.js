@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import checkAuth from './requireAuth';
 import NewComicForm from './newComicForm';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { submitComic } from '../actions'
+import firebaseApi from '../api/firebase';
 
 class Admin extends Component {
   constructor(props, context) {
     super(props, context);
   }
   handleSubmit = (values) => {
-    this.props.actions.submitComic(values);
+    const key = firebaseApi.databaseGenerateKey("comics/")
+    this.props.submitComic(key, values);
   }
   render() {
     return(
@@ -19,10 +20,5 @@ class Admin extends Component {
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    actions: bindActionCreators({submitComic}, dispatch)
-  };
-}
 
-export default connect(null, mapDispatchToProps)(Admin);
+export default connect(null, {submitComic})(Admin);

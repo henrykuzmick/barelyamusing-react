@@ -55,7 +55,16 @@ class FirebaseApi {
       .ref(path)
       .orderByKey()
       .equalTo(key)
-      .once('value');
+      .once('child_added');
+  }
+  static GetPrevValueByKeyOnce(path, key) {
+    return firebase
+      .database()
+      .ref(path)
+      .orderByKey()
+      .startAt(key)
+      .limitToLast(1)
+      .once("value");
   }
 
   static getLatestChildByPath(path) {
@@ -64,6 +73,12 @@ class FirebaseApi {
       .ref(path)
       .limitToLast(1)
       .once('child_added');
+  }
+
+  static getList(path) {
+    return firebase
+      .database()
+      .ref(path)
   }
 
 
@@ -83,6 +98,20 @@ class FirebaseApi {
       .ref(path)
       .set(value);
 
+  }
+
+  static databaseUpdate(data) {
+    return firebase
+      .database()
+      .ref()
+      .update(data);
+  }
+
+  static databaseGenerateKey(path) {
+    return firebase
+      .database()
+      .ref()
+      .child(path).push().key;
   }
 }
 

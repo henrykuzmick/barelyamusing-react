@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {signInWithGoogle, signOut} from '../actions/';
 import toastr from 'toastr';
 
@@ -10,7 +9,7 @@ class Login extends Component {
   }
 
   loginUser() {
-    this.props.actions.signInWithGoogle()
+    this.props.signInWithGoogle()
     .then(user => toastr.success('You are logged in'))
     .catch(error => {
       toastr.error(error.message);
@@ -18,7 +17,7 @@ class Login extends Component {
   }
 
   logoutUser() {
-    this.props.actions.signOut()
+    this.props.signOut()
     .then(user => toastr.success('You have logged out'))
     .catch(error => {
       toastr.error(error.message);
@@ -36,10 +35,4 @@ class Login extends Component {
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    actions: bindActionCreators({signInWithGoogle, signOut}, dispatch)
-  };
-}
-
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(null, {signInWithGoogle, signOut})(Login);
