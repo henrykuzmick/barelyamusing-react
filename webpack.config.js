@@ -16,6 +16,7 @@ module.exports = {
       }
     },
     {test: /(\.css)$/, loaders: ['style', 'css']},
+    {test: /\.sass$/, loaders: ['style', 'css', 'sass']},
     {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file"},
     {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/font-woff"},
     {test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/font-woff"},

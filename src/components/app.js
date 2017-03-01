@@ -14,8 +14,8 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Header />
-        <div className="container">
+        <div className="container maincontainer">
+          <Header />
           {this.props.children}
         </div>
       </div>

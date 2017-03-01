@@ -3,6 +3,7 @@ import Comic from './comic';
 import { connect } from 'react-redux';
 import { getCurrentComic } from '../actions';
 import {Link} from 'react-router';
+import Thumb from './thumb';
 import _ from 'lodash';
 
 class ComicPage extends Component {
@@ -22,7 +23,8 @@ class ComicPage extends Component {
           nextkey = key;
           done = true;
         }
-        if(key === id) {
+        if(comic == id) {
+          console.log(comic)
           currkey = key;
           found = true;
         } else if(!found) {
@@ -55,19 +57,26 @@ class ComicPage extends Component {
 
   render() {
     return(
-      <div>
+      <div className="comicPage">
         { this.props.currentComic &&
-          <h1>{this.props.currentComic.name}</h1>
+          <Comic comic={this.props.currentComic} / >
         }
-
-        { this.props.prevComic &&
-          <div>
-            <Link to={`/comic/${this.props.prevComic.key}`}>Prev</Link>
-          </div>
-        }
-        { this.props.nextComic &&
-          <div>
-            <Link to={`/comic/${this.props.nextComic.key}`}>Next</Link>
+        <div className="left">
+          { this.props.prevComic &&
+            <Thumb comic={ this.props.prevComic } heading="Prev" />
+          }
+        </div>
+        <div className="right">
+          { this.props.nextComic &&
+            <Thumb comic={ this.props.nextComic } heading="Next" />
+          }
+        </div>
+        { this.props.currentComic && this.props.currentComic.comment &&
+          <div className="bottom">
+            <div className="comment">
+              <h4>Author's comment</h4>
+              <p>{this.props.currentComic.comment}</p>
+            </div>
           </div>
         }
       </div>

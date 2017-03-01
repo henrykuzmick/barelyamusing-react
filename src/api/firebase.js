@@ -57,22 +57,21 @@ class FirebaseApi {
       .equalTo(key)
       .once('child_added');
   }
-  static GetPrevValueByKeyOnce(path, key) {
+
+  static getLatestValueByUrl(path, limit) {
     return firebase
       .database()
       .ref(path)
-      .orderByKey()
-      .startAt(key)
-      .limitToLast(1)
-      .once("value");
+      .limitToLast(limit)
+      .once('value');
   }
 
-  static getLatestChildByPath(path) {
+  static uploadFile(file, filename) {
     return firebase
-      .database()
-      .ref(path)
-      .limitToLast(1)
-      .once('child_added');
+      .storage()
+      .ref()
+      .child(`images/${filename}`)
+      .put(file);
   }
 
   static getList(path) {
@@ -81,6 +80,14 @@ class FirebaseApi {
       .ref(path)
   }
 
+  static getChildAddedByUrl(path, url) {
+    return firebase
+      .database()
+      .ref(path)
+      .orderByChild("link")
+      .equalTo(url)
+      .once('child_added');
+  }
 
   static GetChildAddedByKeyOnce(path, key) {
     return firebase

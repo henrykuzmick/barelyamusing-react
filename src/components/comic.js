@@ -6,7 +6,7 @@ class Comic extends Component {
       return(
         <div className="comicHolder">
           <h1>{this.props.comic.name}</h1>
-          <img src={this.props.comic.url} alt={this.props.comic.name}/>
+          <img src={this.props.comic.main} alt={`${this.props.comic.name} - ${this.props.comic.tags}`}/>
         </div>
       )
     } else {

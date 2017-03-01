@@ -12,13 +12,18 @@ class Admin extends Component {
   handleSubmit = (values) => {
     const key = firebaseApi.databaseGenerateKey("comics/")
     this.props.submitComic(key, values);
+
+    console.log(values);
   }
   render() {
     return(
-      <NewComicForm onSubmit={this.handleSubmit} />
+      <NewComicForm uploading={this.props.uploading} onSubmit={this.handleSubmit.bind(this)} />
     )
   }
 }
 
+const mapStateToProps = (state) => ({
+  uploading : state.comics.uploading
+});
 
-export default connect(null, {submitComic})(Admin);
+export default connect(mapStateToProps, {submitComic})(Admin);

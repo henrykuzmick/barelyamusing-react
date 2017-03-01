@@ -2,68 +2,50 @@ import toastr from 'toastr';
 import firebaseApi from '../api/firebase';
 import * as types from './actionTypes';
 import { push } from 'react-router-redux';
-
+import { slugify } from '../common';
+import _ from 'lodash';
 export function signInWithGoogle() {
   return (dispatch) => {
     return firebaseApi.signInWithGoogle()
-      .then(
-        data => {
-          dispatch(authLoggedIn(data.user.uid));
+      .then(data => {
+        dispatch({
+          type: types.AUTH_LOGGED_IN_SUCCESS,
+          userUID: data.user.uid
         })
+      })
       .catch(error => {
         throw(error);
       });
   };
 }
 
-
-export function authInitializedDone() {
-  return {
-    type: types.AUTH_INITIALIZATION_DONE
-  };
-}
-
-export function authLoggedOutSuccess() {
-
-  return {type: types.AUTH_LOGGED_OUT_SUCCESS};
-}
-
 export function authInitialized(user) {
   return (dispatch) => {
-    dispatch(authInitializedDone());
+    dispatch({ type: types.AUTH_INITIALIZATION_DONE });
     if (user) {
-      dispatch(authLoggedIn(user.uid));
+      dispatch({
+        type: types.AUTH_LOGGED_IN_SUCCESS,
+        userUID: user.uid
+      })
     } else {
-      dispatch(authLoggedOutSuccess());
+      dispatch({ type: types.AUTH_LOGGED_OUT_SUCCESS });
     }
   };
 }
 
 
-export function authLoggedIn(userUID) {
-  return (dispatch) => {
-    dispatch(authLoggedInSuccess(userUID));
-  };
-}
-
-export function authLoggedInSuccess(userUID) {
-  return {
-    type: types.AUTH_LOGGED_IN_SUCCESS, userUID
-  };
-}
-
 export function signOut() {
   return (dispatch, getState) => {
     return firebaseApi.authSignOut()
-      .then(
-        () => {
-          dispatch(authLoggedOutSuccess());
-        })
+      .then(() => {
+        dispatch({type: types.AUTH_LOGGED_OUT_SUCCESS});
+      })
       .catch(error => {
         throw(error);
       });
   };
 }
+
 
 export function requireAuth(nextState, replace) {
   return (dispatch, getState) => {
@@ -83,24 +65,43 @@ function redirect(replace, pathname, nextPathName, error = false) {
   }
 }
 
-export function submitComic(key, comic) {
+export function submitComic(key, data) {
+  let comic = {};
+  comic.name = data.name;
+  comic.tags = data.tags;
+  comic.comment = data.comment;
+  comic.url = slugify(data.name);
   let dataToSave = {};
-  dataToSave[`comics/${key}`] = comic;
-  dataToSave[`comic_numbers/${key}`] = true;
-  return (dispatch, getState) => {
-    firebaseApi.databaseUpdate(dataToSave)
-    .then(
-      () => {
-        dispatch(addComicSuccess());
-      }
-    )
+  let filesUploaded = 0;
+  return dispatch => {
+    dispatch({
+      type: types.UPLOADING_COMIC,
+      payload: true
+    });
+    _.map(data.files, (file) => {
+      let filename = `${file.name}-${key}`;
+      firebaseApi.uploadFile(file, filename)
+      .then((snapshot) => {
+        const nameOfFile = file.name.substring(0, file.name.indexOf('.'));
+        comic[nameOfFile] = snapshot.downloadURL
+        filesUploaded++;
+        if(filesUploaded === 4) {
+          dataToSave[`comics/${key}`] = comic;
+          dataToSave[`comic_numbers/${key}`] = comic.url;
+          firebaseApi.databaseUpdate(dataToSave)
+          .then(() => {
+            dispatch({
+              type: types.ADD_COMIC
+            });
+            dispatch({
+              type: types.UPLOADING_COMIC,
+              payload: false
+            });
+          })
+        }
+      })
+    })
   }
-}
-
-export function addComicSuccess() {
-  return {
-    type: types.ADD_COMIC_SUCCESS
-  };
 }
 
 export function getAllComics() {
@@ -117,25 +118,26 @@ export function getAllComics() {
   }
 }
 
-export function getLatestComic() {
+export function getLatestComics() {
   return (dispatch, getState) => {
-    firebaseApi.getLatestChildByPath("comics/")
-    .then(
-      (data) => {
-        let comic = data.val();
-        comic.key = data.key;
-        dispatch(getLatestComicSuccess(comic));
-      }
-    )
+    firebaseApi.getLatestValueByUrl("comics/", 2)
+    .then(data => {
+      let comics = [];
+      _.map(data.val(), (comic, key) => {
+        let c = comic;
+        c.key = key;
+        comics.push(c);
+      })
+      comics.reverse()
+      dispatch({
+        type: types.GET_LATEST_COMIC,
+        payload: comics
+      });
+    });
   }
 }
 
-export function getLatestComicSuccess(comic) {
-  return {
-    type: types.GET_LATEST_COMICS_SUCCESS,
-    payload: comic
-  };
-}
+
 
 export function getCurrentComic(curr, prev, next) {
   return dispatch => {
