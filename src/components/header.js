@@ -9,7 +9,7 @@ class Header extends Component {
 
     if(this.props.auth.isLogged) {
       return(
-        <li><Link to="/admin" activeClassName="active">Admin</Link></li>
+        <li><Link to="/admin">Admin</Link></li>
       )
     }
   }
@@ -21,7 +21,7 @@ class Header extends Component {
         <RandomHeader />
         <div id="navbar" className="navbar">
           <ul className="nav navbar-nav">
-            <li><a href="/">Home</a></li>
+            <li><Link to="/">Home</Link></li>
             <li><a href="#">Comics</a></li>
             <li><a href="#">About</a></li>
             { this.renderAdminLinks() }

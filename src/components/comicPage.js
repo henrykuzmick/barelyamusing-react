@@ -81,12 +81,12 @@ class ComicPage extends Component {
         }
         <div className="left">
           { this.state.prevComic &&
-            <Thumb comic={ this.state.prevComic } heading="Prev" />
+            <Thumb frame={true} comic={ this.state.prevComic } heading="Prev" />
           }
         </div>
         <div className="right">
           { this.state.nextComic &&
-            <Thumb comic={ this.state.nextComic } heading="Next" />
+            <Thumb frame={true} comic={ this.state.nextComic } heading="Next" />
           }
         </div>
         <div className="bottom">
