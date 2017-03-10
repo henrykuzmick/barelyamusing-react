@@ -3,9 +3,9 @@ import checkAuth from './requireAuth';
 import NewComicForm from './newComicForm';
 import { connect } from 'react-redux';
 import { submitComic } from '../actions'
-import {Link, IndexLink} from 'react-router';
+import firebaseApi from '../api/firebase';
 
-class Admin extends Component {
+class NewComic extends Component {
   constructor(props, context) {
     super(props, context);
   }
@@ -17,17 +17,7 @@ class Admin extends Component {
   }
   render() {
     return(
-      <div className="container-fluid">
-        <div className="row text-left">
-          <div className="col-xs-12">
-            <Link to="/admin/new" className="btn btn-primary">New Comic</Link>
-            <br/><br/>
-          </div>
-          <div className="col-xs-12">
-            {this.props.children}
-          </div>
-        </div>
-      </div>
+      <NewComicForm uploading={this.props.uploading} onSubmit={this.handleSubmit.bind(this)} />
     )
   }
 }
@@ -36,4 +26,4 @@ const mapStateToProps = (state) => ({
   uploading : state.comics.uploading
 });
 
-export default connect(mapStateToProps, {submitComic})(Admin);
+export default connect(mapStateToProps, {submitComic})(NewComic);

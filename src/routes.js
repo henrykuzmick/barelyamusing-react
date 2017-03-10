@@ -8,6 +8,8 @@ import ComicPage from './components/comicPage';
 import Login from './components/login';
 import Admin from './components/admin';
 import Home from './components/home';
+import NewComic from './components/newComic';
+import AdminComicList from './components/AdminComicList'
 
 export default function routes(store) {
 
@@ -20,7 +22,10 @@ export default function routes(store) {
       <IndexRoute component={Home}/>
       <Route path="comic/:id" component={ComicPage}/>
       <Route path="login" component={Login}/>
-      <Route path="admin" component={Admin}/>
+      <Route path="admin" component={Admin}>
+        <IndexRoute component={AdminComicList}/>
+        <Route path="new" component={NewComic} />
+      </Route>
     </Route>
   )
 }

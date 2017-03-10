@@ -34,22 +34,27 @@ class NewComicForm extends Component {
     return (
       <form onSubmit={this.props.handleSubmit}>
         <div className="form-group row">
-          <label className="col-xs-2 col-form-label" htmlFor="name">name</label>
+          <label className="col-xs-2 col-form-label" htmlFor="name">Name</label>
           <div className="col-xs-10">
             <Field className="form-control" name="name" component="input" type="text"/>
           </div>
         </div>
         <div className="form-group row">
-          <label className="col-xs-2 col-form-label" htmlFor="name">tags</label>
+          <label className="col-xs-2 col-form-label" htmlFor="tags">Tags</label>
           <div className="col-xs-10">
-            <Field className="form-control" name="tags" component="input" type="text"/>
+            <Field data-role="tagsinput" className="form-control" name="tags" component="input" type="text"/>
           </div>
         </div>
-
         <div className="form-group row">
-          <label className="col-xs-2 col-form-label" htmlFor="comment">comment</label>
+          <label className="col-xs-2 col-form-label" htmlFor="comment">Comment</label>
           <div className="col-xs-10">
             <Field className="form-control" name="comment" component="textarea" />
+          </div>
+        </div>
+        <div className="form-group row">
+          <label className="col-xs-2 col-form-label" htmlFor="favorite">Favorite</label>
+          <div className="col-xs-10">
+            <Field className="form-check-input" name="favorite" component="input" type="checkbox"/>
           </div>
         </div>
         <Field name="files" txt="Files" component={renderDropzoneInput} />

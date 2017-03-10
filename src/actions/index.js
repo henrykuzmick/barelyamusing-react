@@ -66,10 +66,13 @@ function redirect(replace, pathname, nextPathName, error = false) {
 }
 
 export function submitComic(key, data) {
+  console.log(data);
   let comic = {};
   comic.name = data.name;
   comic.tags = data.tags;
-  comic.comment = data.comment;
+  if(data.comment) {
+    comic.comment = data.comment;
+  }
   comic.url = slugify(data.name);
   let dataToSave = {};
   let filesUploaded = 0;
@@ -86,6 +89,10 @@ export function submitComic(key, data) {
         comic[nameOfFile] = snapshot.downloadURL
         filesUploaded++;
         if(filesUploaded === 4) {
+          if(data.favorite) {
+            comic.favorite = data.favorite;
+            dataToSave[`favorites/${key}`] = comic.url;
+          }
           dataToSave[`comics/${key}`] = comic;
           dataToSave[`comic_numbers/${key}`] = comic.url;
           firebaseApi.databaseUpdate(dataToSave)
@@ -106,15 +113,44 @@ export function submitComic(key, data) {
 
 export function getAllComics() {
   return dispatch => {
-    firebaseApi.GetValueByKeyOnce("/", "comic_numbers")
+    firebaseApi.GetValueByKeyOnce("/", "comics")
     .then(snapshot => {
-      dispatch(
-        {
-          type: types.GET_ALL_COMICS,
-          payload: snapshot.val()
-        }
-      );
+      let comics = [];
+      _.map(snapshot.val(), (comic, key) => {
+        let c = comic;
+        c.key = key;
+        comics.push(c);
+      })
+      comics.reverse()
+      dispatch({
+        type: types.GET_ALL_COMICS,
+        payload: comics
+      });
     });
+  }
+}
+
+export function getFavoritesMeta() {
+  return dispatch => {
+    firebaseApi.GetValueByKeyOnce("/", "favorites")
+    .then(snapshot => {
+      dispatch({
+        type: types.GET_FAVORITE_COMICS,
+        payload: snapshot.val()
+      });
+    });
+  }
+}
+
+export function getAdminList() {
+  return dispatch => {
+    firebaseApi.getList("comics/")
+    .on('value', snapshot => {
+      dispatch({
+        type: types.GET_ADMIN_LIST,
+        payload: snapshot.val()
+      })
+    })
   }
 }
 
@@ -134,61 +170,5 @@ export function getLatestComics() {
         payload: comics
       });
     });
-  }
-}
-
-
-
-export function getCurrentComic(curr, prev, next) {
-  return dispatch => {
-    if(curr) {
-      firebaseApi.GetValueByKeyOnce("comics/", curr)
-      .then( data => {
-        let curr_comic = data.val();
-        curr_comic.key = data.key;
-        dispatch({
-          type: types.GET_CURRENT_COMIC,
-          payload: curr_comic
-        });
-      });
-    } else {
-      dispatch({
-        type: types.GET_CURRENT_COMIC,
-        payload: null
-      });
-    }
-    if(prev) {
-      firebaseApi.GetValueByKeyOnce("comics/", prev)
-      .then( data => {
-        let prev_comic = data.val();
-        prev_comic.key = data.key;
-        dispatch({
-          type: types.GET_PREV_COMIC,
-          payload: prev_comic
-        });
-      });
-    } else {
-      dispatch({
-        type: types.GET_PREV_COMIC,
-        payload: null
-      });
-    }
-    if(next) {
-      firebaseApi.GetValueByKeyOnce("comics/", next)
-      .then( data => {
-        let next_comic = data.val();
-        next_comic.key = data.key;
-        dispatch({
-          type: types.GET_NEXT_COMIC,
-          payload: next_comic
-        });
-      });
-    }
-    else {
-      dispatch({
-        type: types.GET_NEXT_COMIC,
-        payload: null
-      });
-    }
   }
 }

@@ -22,10 +22,6 @@ import configureStore from './store/configureStore';
 // routes
 import routes from './routes'
 
-
-
-
-
 // styles
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import '../node_modules/toastr/build/toastr.min.css';

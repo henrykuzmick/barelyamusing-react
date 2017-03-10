@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Header from './header';
 import ComicPage from './comicPage';
-import { getAllComics } from '../actions';
+import { getAllComics, getFavoritesMeta } from '../actions';
 import { connect } from 'react-redux';
 
 class App extends Component {
@@ -14,7 +14,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <div className="container maincontainer">
+        <div className="maincontainer">
           <Header />
           {this.props.children}
         </div>
@@ -23,4 +23,4 @@ class App extends Component {
   }
 }
 
-export default connect(null, { getAllComics })(App);
+export default connect(null, { getAllComics, getFavoritesMeta })(App);

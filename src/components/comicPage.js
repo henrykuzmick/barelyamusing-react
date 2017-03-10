@@ -1,97 +1,115 @@
 import React, { Component } from 'react';
 import Comic from './comic';
 import { connect } from 'react-redux';
-import { getCurrentComic } from '../actions';
 import {Link} from 'react-router';
 import Thumb from './thumb';
 import _ from 'lodash';
+import ReactDisqusThread from 'react-disqus-thread';
 
 class ComicPage extends Component {
   constructor(props, context) {
     super(props, context);
+    this.state = {}
+    this.pushMetaTags = this.pushMetaTags.bind(this);
+    this.getCurrentComic = this.getCurrentComic.bind(this);
+    this.resetState = this.resetState.bind(this);
   }
 
-  mapComics(list, id) {
-    let prevkey = null;
-    let currkey = null;
-    let nextkey = null;
-    let found = false;
-    let done = false;
-    if(list !== {}) {
-      _.map(list, (comic, key) => {
-        if(found && !done) {
-          nextkey = key;
-          done = true;
-        }
-        if(comic == id) {
-          console.log(comic)
-          currkey = key;
-          found = true;
-        } else if(!found) {
-          prevkey = key;
-        }
-      })
-      if(currkey) {
-        return this.props.getCurrentComic(currkey, prevkey, nextkey)
-      }
-    }
-    return false;
+  resetState() {
+    this.setState({currentComic: null, prevComic: null, nextComic: null})
   }
 
-  resetComic() {
-    this.props.getCurrentComic(null, null, null)
-  }
 
   componentWillMount() {
-    this.resetComic();
-    this.mapComics(this.props.comics, this.props.params.id);
+    this.getCurrentComic(this.props.comics, this.props.params.id)
+  }
+
+  getCurrentComic(list, id) {
+    let nextComic = null
+    let prevComic = null
+    let currentComic = null
+    list.find((c, i) => {
+      if(c.url === id) {
+        currentComic = c;
+        if(i !== 0) {
+          nextComic = list[i-1];
+        }
+        if(i+1 !== list.length) {
+          prevComic = list[i+1];
+        }
+      }
+    });
+    this.setState({currentComic, prevComic, nextComic})
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.resetState();
+    if(this.props.comics != nextProps.comics | this.props.params.id != nextProps.params.id) {
+      this.getCurrentComic(nextProps.comics, nextProps.params.id);
+    }
+  }
+
+  pushMetaTags() {
+    document.querySelector('meta[name="keywords"]').setAttribute("content", this.state.currentComic.tags);
+    document.querySelector('meta[name="description"]').setAttribute("content", `A webcomic about stuff - ${this.state.currentComic.name}`);
+    document.title = `Barely Amusing - ${this.state.currentComic.name}`;
   }
 
 
-  componentWillReceiveProps(nextProps) {
-    if(this.props.comics != nextProps.comics | this.props.params.id != nextProps.params.id) {
-      this.resetComic();
-      this.mapComics(nextProps.comics, nextProps.params.id);
-    }
+  renderDisqus() {
+
+    var disqus_config = function () {
+        this.page.url = `http://www.barelyamusing.com${this.props.location.pathname}`
+        this.page.identifier = this.state.currentComic.key
+    };
+    var d = document, s = d.createElement('script');
+
+    s.src = '//barelyamusing.disqus.com/embed.js';  // IMPORTANT: Replace EXAMPLE with your forum shortname!
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
   }
 
   render() {
+    if(this.state.currentComic) {
+      this.pushMetaTags()
+    }
+    console.log(this.state.currentComic)
     return(
       <div className="comicPage">
-        { this.props.currentComic &&
-          <Comic comic={this.props.currentComic} / >
+        { this.state.currentComic &&
+          <Comic comic={this.state.currentComic} / >
         }
         <div className="left">
-          { this.props.prevComic &&
-            <Thumb comic={ this.props.prevComic } heading="Prev" />
+          { this.state.prevComic &&
+            <Thumb comic={ this.state.prevComic } heading="Prev" />
           }
         </div>
         <div className="right">
-          { this.props.nextComic &&
-            <Thumb comic={ this.props.nextComic } heading="Next" />
+          { this.state.nextComic &&
+            <Thumb comic={ this.state.nextComic } heading="Next" />
           }
         </div>
-        { this.props.currentComic && this.props.currentComic.comment &&
-          <div className="bottom">
+        <div className="bottom">
+          { this.state.currentComic && this.state.currentComic.comment &&
             <div className="comment">
               <h4>Author's comment</h4>
-              <p>{this.props.currentComic.comment}</p>
+              <p>{this.state.currentComic.comment}</p>
             </div>
-          </div>
-        }
+          }
+          <div id="disqus_thread"></div>
+          { this.state.currentComic &&
+            this.renderDisqus()
+          }
+        </div>
       </div>
     )
   }
 }
-// <Comic comic={this.props.currentComic} / >
-// { this.props.nextComic !== null &&
-//   <Link to={`/comic/${this.props.nextComic.key}`}>Next</Link>
-// }
+
+
+
 const mapStateToProps = (state) => ({
-  comics : state.comics.list,
-  currentComic: state.comics.current,
-  prevComic: state.comics.prev,
-  nextComic: state.comics.next
+  comics : state.comics.list
 });
 
-export default connect(mapStateToProps, { getCurrentComic })(ComicPage);
+export default connect(mapStateToProps)(ComicPage);
