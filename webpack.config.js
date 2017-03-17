@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const config = {
   entry: [
@@ -20,11 +21,15 @@ const config = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        loader: ExtractTextPlugin.extract({
+          loader: 'css-loader'
+        })
       },
       {
         test: /\.sass$/,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        loader: ExtractTextPlugin.extract({
+          use: ['css-loader', 'sass-loader']
+        })
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
@@ -66,6 +71,7 @@ const config = {
     new HtmlWebpackPlugin({
       template: 'src/index.html'
     }),
+    new ExtractTextPlugin('style.css')
     // new webpack.DefinePlugin({
     //   'process.env': {
     //     NODE_ENV: JSON.stringify('production')

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Route, IndexRoute} from 'react-router';
-import {requireAuth} from './actions/';
+import {requireAuth, requireAdmin} from './actions/';
 
 // components
 import App from './components/app';
@@ -14,7 +14,7 @@ import AdminComicList from './components/AdminComicList'
 export default function routes(store) {
 
   const checkAdmin = (nextState, replace, callback) => {
-    store.dispatch(requireAuth(nextState, replace, callback));
+    store.dispatch(requireAdmin(nextState, replace, callback));
   };
 
   return(
@@ -22,7 +22,7 @@ export default function routes(store) {
       <IndexRoute component={Home}/>
       <Route path="comic/:id" component={ComicPage}/>
       <Route path="login" component={Login}/>
-      <Route path="admin" component={Admin}>
+      <Route path="admin" component={Admin} onEnter={checkAdmin}>
         <IndexRoute component={AdminComicList}/>
         <Route path="new" component={NewComic} />
       </Route>

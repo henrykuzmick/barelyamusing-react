@@ -1,22 +1,18 @@
 import React, { Component } from 'react';
 import checkAuth from './requireAuth';
 import { connect } from 'react-redux';
-import { getAdminList } from '../actions'
-import _ from 'lodash';
 import {Link, IndexLink} from 'react-router';
 
 class AdminComicList extends Component {
   constructor(props, context) {
     super(props, context);
   }
-  componentWillMount() {
-    this.props.getAdminList();
-  }
+
   renderComicList() {
     return(
-      _.map(this.props.adminlist, (comic, key) => {
+      this.props.comics.map((comic) => {
         return(
-          <Link key={key} to={`admin/edit/${key}`} className="list-group-item list-group-item-action clearfix">
+          <Link key={comic.key} to={`admin/edit/${comic.key}`} className="list-group-item list-group-item-action clearfix">
             <img src={comic.thumb} className="pull-left" />
             <h4 className="title">
 							{ comic.name }
@@ -37,7 +33,7 @@ class AdminComicList extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  adminlist : state.comics.adminlist
+  comics : state.comics.list
 });
 
-export default connect(mapStateToProps, {getAdminList})(AdminComicList);
+export default checkAuth(connect(mapStateToProps)(AdminComicList));

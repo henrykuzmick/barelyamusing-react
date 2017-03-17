@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import Comic from './comic';
 import { connect } from 'react-redux';
-import {Link} from 'react-router';
+import { Link } from 'react-router';
 import Thumb from './thumb';
-import _ from 'lodash';
+import Comic from './comic';
 import ReactDisqusThread from 'react-disqus-thread';
 
 class ComicPage extends Component {
@@ -18,7 +17,6 @@ class ComicPage extends Component {
   resetState() {
     this.setState({currentComic: null, prevComic: null, nextComic: null})
   }
-
 
   componentWillMount() {
     this.getCurrentComic(this.props.comics, this.props.params.id)
@@ -69,11 +67,14 @@ class ComicPage extends Component {
     (d.head || d.body).appendChild(s);
   }
 
+  handleNewComment() {
+
+  }
+
   render() {
     if(this.state.currentComic) {
-      this.pushMetaTags()
+      this.pushMetaTags();
     }
-    console.log(this.state.currentComic)
     return(
       <div className="comicPage">
         { this.state.currentComic &&
@@ -89,6 +90,22 @@ class ComicPage extends Component {
             <Thumb frame={true} comic={ this.state.nextComic } heading="Next" />
           }
         </div>
+        <div className="buttons">
+          { this.state.prevComic &&
+            <Link to={`/comic/${this.state.prevComic.url}`}>
+              <i className="fa fa-arrow-left" aria-hidden="true"></i>
+            </Link>
+          }
+          <Link to="/random"><i className="fa fa-refresh" aria-hidden="true"></i></Link>
+          { this.state.nextComic &&
+            <Link to={`/comic/${this.state.nextComic.url}`}>
+              <i className="fa fa-arrow-right" aria-hidden="true"></i>
+            </Link>
+          }
+
+
+
+        </div>
         <div className="bottom">
           { this.state.currentComic && this.state.currentComic.comment &&
             <div className="comment">
@@ -96,10 +113,13 @@ class ComicPage extends Component {
               <p>{this.state.currentComic.comment}</p>
             </div>
           }
-          <div id="disqus_thread"></div>
-          { this.state.currentComic &&
-            this.renderDisqus()
-          }
+          <ReactDisqusThread
+            shortname="barelyamusing"
+            identifier={this.state.currentComic.key}
+            title={this.state.currentComic.name}
+            url={ `http://www.barelyamusing.com${this.props.location.pathname}` }
+            category_id="123456"
+            onNewComment={this.handleNewComment}/>
         </div>
       </div>
     )

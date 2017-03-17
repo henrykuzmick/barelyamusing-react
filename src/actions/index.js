@@ -55,6 +55,47 @@ export function requireAuth(nextState, replace) {
   };
 }
 
+export function requireAdmin(nextState, replace, callback) {
+  return (dispatch, getState) => {
+    if (getState().auth.isLogged) {
+      switch (getState().user.isAdmin) {
+        case false:
+          redirect(replace, '/login', nextState.location.pathname, 'You need to be logged to access this page');
+          break;
+        case undefined:
+          firebaseApi.GetChildAddedByKeyOnce('/admins/', getState().auth.currentUserUID)
+            .then(
+              user => {
+                if (user.exists() && user.val()) {
+                  dispatch({
+                    type: types.USER_IS_ADMIN_SUCCESS
+                  });
+                  callback();
+                } else {
+                  redirect(replace, '/login', nextState.location.pathname, 'You need to be logged to access this page');
+                }
+              })
+            .catch(
+              error => {
+                redirect(replace, '/login', nextState.location.pathname, 'You need to be logged to access this page');
+                callback();
+                // @TODO better error handling
+                throw(error);
+              });
+          break;
+        case true:
+          callback();
+          break;
+
+      }
+    } else {
+      redirect(replace, '/login', nextState.location.pathname, 'You need to be logged to access this page');
+      callback();
+    }
+  };
+}
+
+
 function redirect(replace, pathname, nextPathName, error = false) {
   replace({
     pathname: pathname,
@@ -66,7 +107,6 @@ function redirect(replace, pathname, nextPathName, error = false) {
 }
 
 export function submitComic(key, data) {
-  console.log(data);
   let comic = {};
   comic.name = data.name;
   comic.tags = data.tags;
@@ -91,10 +131,8 @@ export function submitComic(key, data) {
         if(filesUploaded === 4) {
           if(data.favorite) {
             comic.favorite = data.favorite;
-            dataToSave[`favorites/${key}`] = comic.url;
           }
           dataToSave[`comics/${key}`] = comic;
-          dataToSave[`comic_numbers/${key}`] = comic.url;
           firebaseApi.databaseUpdate(dataToSave)
           .then(() => {
             dispatch({

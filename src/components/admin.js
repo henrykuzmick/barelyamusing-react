@@ -36,4 +36,4 @@ const mapStateToProps = (state) => ({
   uploading : state.comics.uploading
 });
 
-export default connect(mapStateToProps, {submitComic})(Admin);
+export default checkAuth(connect(mapStateToProps, {submitComic})(Admin));
